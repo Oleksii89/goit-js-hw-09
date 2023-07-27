@@ -5,9 +5,14 @@ import 'flatpickr/dist/flatpickr.min.css';
 
 const inputEl = document.getElementById('datetime-picker');
 const startBtn = document.querySelector('button[data-start]');
-let startBtnDisabled = startBtn.setAttribute('disabled', 'true');
-const currentTime = Date.now();
+const dataDays = document.querySelector('.value[data-days]');
+const dataHours = document.querySelector('.value[data-hours]');
+const dataMinutes = document.querySelector('.value[data-minutes]');
+const dataSeconds = document.querySelector('.value[data-seconds]');
+let currentTime = Date.now();
+
 startBtn.addEventListener('click', onStartCounter);
+startBtn.setAttribute('disabled', 'true');
 
 const options = {
   enableTime: true,
@@ -25,14 +30,30 @@ const options = {
 };
 const fp = flatpickr(inputEl, options);
 
-const days = document.querySelector('.value[data-days]');
-const hours = document.querySelector('.value[data-hours]');
-const minutes = document.querySelector('.value[data-minutes]');
-const seconds = document.querySelector('.value[data-seconds]');
+function onStartCounter() {
+  counter.start();
+}
+const counter = {
+  start() {
+    timerId = setInterval(() => {
+      currentTime = Date.now();
+      const targetTime = selectedDate - currentTime;
+      updateTimerface(convertMs(targetTime));
+      startBtn.setAttribute('disabled', 'true');
+      inputEl.setAttribute('disabled', 'true');
 
-function onStartCounter() {}
-
-setInterval(() => {}, 1000);
+      if (targetTime <= 1000) {
+        this.stop();
+      }
+    }, 1000);
+  },
+  stop() {
+    startBtn.setAttribute('disabled', 'true');
+    inputEl.setAttribute('disabled', 'true');
+    clearInterval(timerId);
+    return;
+  },
+};
 
 function convertMs(ms) {
   // Number of milliseconds per unit of time
@@ -42,13 +63,26 @@ function convertMs(ms) {
   const day = hour * 24;
 
   // Remaining days
-  const days = Math.floor(ms / day);
+  const days = addLeadingZero(Math.floor(ms / day));
   // Remaining hours
-  const hours = Math.floor((ms % day) / hour);
+  const hours = addLeadingZero(Math.floor((ms % day) / hour));
   // Remaining minutes
-  const minutes = Math.floor(((ms % day) % hour) / minute);
+  const minutes = addLeadingZero(Math.floor(((ms % day) % hour) / minute));
   // Remaining seconds
-  const seconds = Math.floor((((ms % day) % hour) % minute) / second);
+  const seconds = addLeadingZero(
+    Math.floor((((ms % day) % hour) % minute) / second)
+  );
 
   return { days, hours, minutes, seconds };
+}
+
+function addLeadingZero(value) {
+  return String(value).padStart(2, '0');
+}
+
+function updateTimerface({ days, hours, minutes, seconds }) {
+  dataDays.textContent = `${days}`;
+  dataHours.textContent = `${hours}`;
+  dataMinutes.textContent = `${minutes}`;
+  dataSeconds.textContent = `${seconds}`;
 }
