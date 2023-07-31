@@ -10,6 +10,7 @@ const dataHours = document.querySelector('.value[data-hours]');
 const dataMinutes = document.querySelector('.value[data-minutes]');
 const dataSeconds = document.querySelector('.value[data-seconds]');
 let currentTime = Date.now();
+let selectedDate;
 
 startBtn.addEventListener('click', onStartCounter);
 startBtn.setAttribute('disabled', 'true');
