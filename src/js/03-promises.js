@@ -1,19 +1,31 @@
 const formEl = document.querySelector('.form');
 formEl.addEventListener('submit', onSubmit);
 let inputedData = '';
-const { delay, step, amount } = formEl.elements;
 
 function onSubmit(evt) {
   evt.preventDefault();
+  const { delay, step, amount } = formEl.elements;
   inputedData = {
     Delay: Number(delay.value),
     Step: Number(step.value),
     Amount: Number(amount.value),
   };
-  for (let i = 1; i <= inputedData.Amount; i += 1) {
-    let promiseDelay = inputedData.Delay + inputedData.Step * i;
 
-    createPromise(i, promiseDelay)
+  if (
+    inputedData.Delay < 0 ||
+    inputedData.Step < 0 ||
+    inputedData.Amount <= 0
+  ) {
+    return window.alert(
+      `First delay and Delay step cannot be less than 0, Amount cannot be 0 or less`
+    );
+  }
+  for (let i = 1; i <= inputedData.Amount; i += 1) {
+    if (i >= 2) {
+      inputedData.Delay += inputedData.Step;
+    }
+
+    createPromise(i, inputedData.Delay)
       .then(({ position, delay }) => {
         console.log(`✅ Fulfilled promise ${position} in ${delay}ms`);
       })
